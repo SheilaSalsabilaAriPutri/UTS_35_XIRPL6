@@ -5,13 +5,18 @@
  */
 
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -19,12 +24,18 @@ import javax.swing.table.DefaultTableModel;
  * @author Moklet
  */
 public class tammenu extends javax.swing.JFrame {
+    int nol_jam ;
+    int nol_menit ;
+    int nol_detik ;
 
     /**
      * Creates new form tammenu
      */
     public tammenu() {
         initComponents();
+        
+        setTanggal();
+        setJam();
     }
 
     /**
@@ -61,6 +72,9 @@ public class tammenu extends javax.swing.JFrame {
         jumlah = new javax.swing.JTextField();
         jLabel17 = new javax.swing.JLabel();
         no = new javax.swing.JTextField();
+        jLabel18 = new javax.swing.JLabel();
+        tanggal = new com.toedter.calendar.JDateChooser();
+        jLabel21 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         save1 = new javax.swing.JButton();
         clear = new javax.swing.JButton();
@@ -70,6 +84,8 @@ public class tammenu extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         data = new javax.swing.JTable();
         refresh = new javax.swing.JButton();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(null);
@@ -95,7 +111,7 @@ public class tammenu extends javax.swing.JFrame {
 
         jLabel3.setText("Daftar Menu Minuman");
         jPanel2.add(jLabel3);
-        jLabel3.setBounds(170, 10, 150, 50);
+        jLabel3.setBounds(160, 10, 150, 50);
 
         jLabel4.setText("1. Soto Ayam(10K)");
         jPanel2.add(jLabel4);
@@ -135,23 +151,23 @@ public class tammenu extends javax.swing.JFrame {
 
         jLabel9.setText("1. Es Teh(5K)");
         jPanel2.add(jLabel9);
-        jLabel9.setBounds(170, 70, 150, 40);
+        jLabel9.setBounds(160, 70, 150, 40);
 
         jLabel10.setText("2. Es Jeruk(6K)");
         jPanel2.add(jLabel10);
-        jLabel10.setBounds(170, 100, 150, 40);
+        jLabel10.setBounds(160, 100, 150, 40);
 
         jLabel11.setText("3. Es Teler(9K)");
         jPanel2.add(jLabel11);
-        jLabel11.setBounds(170, 130, 150, 40);
+        jLabel11.setBounds(160, 130, 150, 40);
 
         jLabel12.setText("4. Es Kelapa Muda(8K)");
         jPanel2.add(jLabel12);
-        jLabel12.setBounds(170, 160, 150, 40);
+        jLabel12.setBounds(160, 160, 150, 40);
 
         jLabel13.setText("5. Es Kacang Hijau(8K)");
         jPanel2.add(jLabel13);
-        jLabel13.setBounds(170, 190, 150, 40);
+        jLabel13.setBounds(160, 190, 150, 40);
 
         getContentPane().add(jPanel2);
         jPanel2.setBounds(550, 90, 290, 250);
@@ -161,27 +177,37 @@ public class tammenu extends javax.swing.JFrame {
 
         jLabel14.setText("Makanan/minuman");
         jPanel4.add(jLabel14);
-        jLabel14.setBounds(20, 70, 110, 40);
+        jLabel14.setBounds(130, 70, 110, 40);
         jPanel4.add(makanan);
-        makanan.setBounds(20, 100, 180, 30);
+        makanan.setBounds(130, 100, 180, 30);
 
-        jLabel15.setText("Harga");
+        jLabel15.setText("Tanggal Pemesanan");
         jPanel4.add(jLabel15);
-        jLabel15.setBounds(220, 70, 110, 40);
+        jLabel15.setBounds(350, 10, 110, 40);
         jPanel4.add(harga);
-        harga.setBounds(220, 100, 180, 30);
+        harga.setBounds(150, 40, 180, 30);
 
         jLabel16.setText("Jumlah");
         jPanel4.add(jLabel16);
-        jLabel16.setBounds(420, 70, 110, 40);
+        jLabel16.setBounds(340, 70, 110, 40);
         jPanel4.add(jumlah);
-        jumlah.setBounds(420, 100, 100, 30);
+        jumlah.setBounds(340, 100, 100, 30);
 
         jLabel17.setText("nomor makanan");
         jPanel4.add(jLabel17);
-        jLabel17.setBounds(20, 10, 110, 40);
+        jLabel17.setBounds(40, 10, 110, 40);
         jPanel4.add(no);
-        no.setBounds(20, 40, 80, 30);
+        no.setBounds(40, 40, 80, 30);
+
+        jLabel18.setText("Harga");
+        jPanel4.add(jLabel18);
+        jLabel18.setBounds(150, 10, 110, 40);
+        jPanel4.add(tanggal);
+        tanggal.setBounds(350, 40, 190, 30);
+
+        jLabel21.setText("Max. 2 item");
+        jPanel4.add(jLabel21);
+        jLabel21.setBounds(450, 100, 80, 30);
 
         getContentPane().add(jPanel4);
         jPanel4.setBounds(0, 90, 550, 160);
@@ -233,15 +259,23 @@ public class tammenu extends javax.swing.JFrame {
 
         data.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "No.", "Makanan/Minuman", "Jumlah", "Harga"
+                "No.", "Makanan/Minuman", "Jumlah", "Harga", "Tanggal Pemesanan"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(data);
 
         jPanel6.add(jScrollPane1);
@@ -255,6 +289,12 @@ public class tammenu extends javax.swing.JFrame {
         });
         jPanel6.add(refresh);
         refresh.setBounds(710, 260, 110, 40);
+
+        jLabel19.setText("Tanggal ");
+        jPanel6.add(jLabel19);
+        jLabel19.setBounds(40, 260, 180, 40);
+        jPanel6.add(jLabel20);
+        jLabel20.setBounds(340, 260, 280, 40);
 
         getContentPane().add(jPanel6);
         jPanel6.setBounds(0, 340, 840, 310);
@@ -271,7 +311,10 @@ public class tammenu extends javax.swing.JFrame {
     }//GEN-LAST:event_clearActionPerformed
 
     private void save1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save1ActionPerformed
-       if("".equals(no.getText())|| "".equals(makanan.getText())|| "".equals(harga.getText()) || "".equals(jumlah.getText())){
+       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String tanggal1 = dateFormat.format(tanggal.getDate());
+        
+        if("".equals(no.getText())|| "".equals(makanan.getText())|| "".equals(harga.getText()) || "".equals(jumlah.getText()) || "".equals(tanggal1)){
            JOptionPane.showMessageDialog(this, "Harap Lengkapi Data", "Warning", JOptionPane.WARNING_MESSAGE);
            }else{
            int jumlah1 = Integer.parseInt(jumlah.getText());
@@ -279,7 +322,7 @@ public class tammenu extends javax.swing.JFrame {
            int harga2 ;
            if(jumlah1 == 2){
                harga2 = harga1*2;
-             String SQL = "INSERT INTO tb_menu (no_makan,namamakan,hargamakan,jumlah)" + "VALUES('"+no.getText()+"','"+makanan.getText()+"','"+harga2+"','"+jumlah.getText()+"')";
+             String SQL = "INSERT INTO tb_menu (no_makan,namamakan,hargamakan,jumlah,tanggal)" + "VALUES('"+no.getText()+"','"+makanan.getText()+"','"+harga2+"','"+jumlah.getText()+"','"+tanggal1+"')";
        int status = KoneksiDB.execute(SQL);
        if (status == 1){
            JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan","OK", JOptionPane.INFORMATION_MESSAGE);
@@ -291,7 +334,7 @@ public class tammenu extends javax.swing.JFrame {
                
            }else if(jumlah1 == 3){
                harga2 = harga1*3;
-               String SQL = "INSERT INTO tb_menu (no_makan,namamakan,hargamakan,jumlah)" + "VALUES('"+no.getText()+"','"+makanan.getText()+"','"+harga2+"','"+jumlah.getText()+"')";
+               String SQL = "INSERT INTO tb_menu (no_makan,namamakan,hargamakan,jumlah,tanggal)" + "VALUES('"+no.getText()+"','"+makanan.getText()+"','"+harga2+"','"+jumlah.getText()+"','"+tanggal1+"')";
        int status = KoneksiDB.execute(SQL);
        if (status == 1){
            JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan","OK", JOptionPane.INFORMATION_MESSAGE);
@@ -302,7 +345,7 @@ public class tammenu extends javax.swing.JFrame {
             }
                
            }else{
-       String SQL = "INSERT INTO tb_menu (no_makan,namamakan,hargamakan,jumlah)" + "VALUES('"+no.getText()+"','"+makanan.getText()+"','"+harga.getText()+"','"+jumlah.getText()+"')";
+       String SQL = "INSERT INTO tb_menu (no_makan,namamakan,hargamakan,jumlah,tanggal)" + "VALUES('"+no.getText()+"','"+makanan.getText()+"','"+harga.getText()+"','"+jumlah.getText()+"','"+tanggal1+"')";
        int status = KoneksiDB.execute(SQL);
        if (status == 1){
            JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan","OK", JOptionPane.INFORMATION_MESSAGE);
@@ -397,7 +440,11 @@ public class tammenu extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -418,6 +465,7 @@ public class tammenu extends javax.swing.JFrame {
     private javax.swing.JButton print;
     private javax.swing.JButton refresh;
     private javax.swing.JButton save1;
+    private com.toedter.calendar.JDateChooser tanggal;
     // End of variables declaration//GEN-END:variables
 
     private void selectData() {
@@ -442,4 +490,44 @@ public class tammenu extends javax.swing.JFrame {
            data.setModel(dtm);
         
     }
-}
+
+    private void setTanggal() {
+        java.util.Date skg = new java.util.Date();
+        java.text.SimpleDateFormat kal = new java.text.SimpleDateFormat("dd/MM/yyyy");
+        jLabel19.setText(kal.format(skg));
+    }
+
+    private void setJam() {
+        ActionListener taskPerformer = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt){
+              Date dt = new Date() ;
+                int nilai_jam = dt.getHours() ;
+                int nilai_menit = dt.getMinutes() ;
+                int nilai_detik = dt.getSeconds() ;
+                if(nilai_jam <= 9){
+                    
+                 nol_jam = 0 ;   
+                    
+                } if(nilai_menit <= 9){
+                    
+                 nol_menit = 0 ;   
+                    
+                } if(nilai_jam <= 9){
+                    
+                 nol_detik = 0 ;   
+                    
+                }
+                String jam = nol_jam + Integer.toString(nilai_jam) ;
+                String menit = nol_menit + Integer.toString(nilai_menit) ;
+                String detik = nol_detik + Integer.toString(nilai_detik) ;
+                
+                jLabel20.setText("Jam" + jam + ":" + menit + ":" + detik );
+            }
+            
+        };
+        
+            new Timer(100, taskPerformer).start() ;  
+            }
+        }
+
